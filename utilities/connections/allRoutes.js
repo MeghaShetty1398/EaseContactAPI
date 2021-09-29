@@ -1,6 +1,6 @@
 const Routes = {
     user: require('../../routes/userRoute'),
-    Worker: require('../../routes/userRoute'),
+    worker: require('../../routes/workerRoute'),
 }
 
 module.exports = Routes;

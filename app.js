@@ -2,13 +2,15 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
+const path = require('path');
 
 const app = express();
 dotenv.config();
 
 //Routes
 const allRoutes = require('./utilities/connections/allRoutes');
-
+// Set static folder
+app.use(express.static(path.join(__dirname, './assets')));
 app.use(bodyParser.urlencoded({ extended: true, limit: '7mb' }));
 app.use(bodyParser.json({limit: '7mb'}));
 
@@ -23,7 +25,7 @@ app.use((req, res, next) => {
 
 //Inatializing Routes
 app.use(allRoutes.user);
-//app.use(allRoutes.technicianmaster)
+app.use(allRoutes.worker);
 
 //Database connection
 const sequelize = require('./utilities/connections/mysqlConnection');

@@ -5,6 +5,7 @@ const { check, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const sendMail = require('./../utilities/connections/sendEmail');
 const image = require('../utilities/connections/image');
+const base64ToImage = require('../utilities/connections/base64fun');
 const { user } = require('../utilities/connections/allModels');
 const nowdate = new Date();
 
@@ -13,7 +14,7 @@ const getWorker = async (req, res) => {
         where: {
             status: true
         },
-        attributes: ['id','name','mobile','email','gender','age','experience','qualification','address','pincode'],
+        attributes: ['id','name','mobile','email','gender','age','experience','qualification','profile_image','proof_document','address','pincode'],
   
     }).then(result => {
         res.json({
@@ -31,7 +32,7 @@ const createWorker = [
     check('mobile').isNumeric().isLength({ min: 10, max: 10 }),
     check('email').isEmail().withMessage("Invalid Email"),
     check('gender').isString().withMessage("Invalid Gender"),
-    check('age').isInt().withMessage("Invalid Age"),
+    check('age').isNumeric().withMessage("Invalid Age"),
     check('experience').isNumeric().withMessage("Invalid Experience"),
     check('qualification').isString().withMessage("Invalid Qualification"),
     check('address').isString().withMessage("Invalid Address"),
@@ -56,14 +57,21 @@ const createWorker = [
             experience:req.body.experience,
             qualification:req.body.qualification,
             address:req.body.address,
-            address:req.body.address,
             pincode:req.body.pincode,
             state:req.body.state,
             city:req.body.city,
             area:req.body.area,
             password:hashPassword,
             status: 1,
-        }).then((result) => {         
+        }).then((result) => {  
+            models.worker.findOne({
+                where: { id: result.id }
+            })
+            .then(re => {
+                re.profile_image = base64ToImage(req, 'worker', result.id, 'profile_image', req.body.profile_image);
+                re.proof_document = base64ToImage(req, 'worker', result.id, 'proof_document', req.body.proof_document);
+                re.save();
+            })       
             res.json({ 'success': true, 'error': false });
         }).catch(err => {
                 res.json({
@@ -82,8 +90,40 @@ const createWorker = [
         });
     }
 ]
+const checkWorkerCredential = [
+    check('email').isEmail().withMessage("Invalid Email"),
+    check('password').isLength({ min: 5 }).withMessage("Invalid Password"),
+    check('string').isString(),
+    async (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errors: errors.array() });
+        }
 
+        const worker = await models.worker.findOne({ where: { email: req.body.email } });
+        if (!worker) { return res.status(200).json({ 'error': 'Invalid Email' }); }
+
+        const validPass = await bcrypt.compare(req.body.password, worker.password);
+        if (!validPass) { return res.status(200).json({ 'error': 'Invalid Password' }); }
+
+        models.worker.findOne({
+            where: {
+                email: worker.email
+            },
+            attributes: ['id','name','mobile','email','gender','age','experience','qualification','address','pincode'],
+       
+        }).then(result => {
+            res.json({ 'success': true, 'token': jwt.sign({ id: user.id }, process.env.ENC_KEY), 'user': result });
+        }).catch(err => {
+            res.status(422).json({
+                result: err
+            });
+        });
+
+    }
+];
 module.exports = {
     getWorker:getWorker,
+    checkWorkerCredential:checkWorkerCredential,
     createWorker:createWorker
 }

@@ -26,7 +26,7 @@ const workerModel = dbConnection.define('worker',{
         allowNull: false
     },
     age :{
-        type : sequelize.INTEGER,
+        type : sequelize.STRING(3),
         allowNull: false
     },
     address :{
@@ -50,12 +50,20 @@ const workerModel = dbConnection.define('worker',{
         allowNull: false,
     },
     experience :{
-        type : sequelize.NUMBER(3,2),
+        type : sequelize.INTEGER,
         allowNull: false
     },
     qualification :{
         type : sequelize.STRING(30),
         allowNull: false
+    },
+    profile_image:{
+        type: sequelize.STRING(500),
+        allowNull: true
+    },
+    proof_document:{
+        type: sequelize.STRING(500),
+        allowNull: true
     },
     password :{
         type : sequelize.STRING(191),
@@ -64,6 +72,6 @@ const workerModel = dbConnection.define('worker',{
     status :{
         type : sequelize.BOOLEAN,
         allowNull: false
-    }
+    },
 })
 module.exports = workerModel;

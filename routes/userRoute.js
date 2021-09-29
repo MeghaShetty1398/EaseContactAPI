@@ -5,6 +5,6 @@ const access = require('./../utilities/middleware/verifyAccess');
 
 const user = require('../controllers/userController');
 router.post('/createUser',access, user.createUser);
-router.post('/login',access, user.checkCredential);
+router.post('/userlogin',access, user.checkUserCredential);
 
 module.exports = router;

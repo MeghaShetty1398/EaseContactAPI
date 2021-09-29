@@ -5,6 +5,7 @@ const access = require('./../utilities/middleware/verifyAccess');
 
 const worker = require('../controllers/workerController');
 router.post('/createWorker',access, worker.createWorker);
-router.get('/getWorker',access, worker.getWorker);
+router.post('/workerlogin',access, worker.checkWorkerCredential);
+router.get('/getAllWorker',access, worker.getWorker);
 
 module.exports = router;

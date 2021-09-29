@@ -37,7 +37,7 @@ const getUser = async (req, res) => {
 //const salt = await bcrypt.genSalt(10);
 //const hashPassword = await bcrypt.hash(req.body.password, salt);
 
-const checkCredential = [
+const checkUserCredential = [
     check('email').isEmail().withMessage("Invalid Email"),
     check('password').isLength({ min: 5 }).withMessage("Invalid Password"),
     check('string').isString(),
@@ -48,10 +48,10 @@ const checkCredential = [
         }
 
         const user = await models.user.findOne({ where: { email: req.body.email } });
-        if (!user) { return res.status(422).json({ 'error': 'Invalid Email' }); }
+        if (!user) { return res.status(200).json({ 'error': 'Invalid Email' }); }
 
         const validPass = await bcrypt.compare(req.body.password, user.password);
-        if (!validPass) { return res.status(422).json({ 'error': 'Invalid Password' }); }
+        if (!validPass) { return res.status(200).json({ 'error': 'Invalid Password' }); }
 
         models.user.findOne({
             where: {
@@ -121,6 +121,6 @@ const createUser = [
 
 module.exports = {
     getUser: getUser,
-    checkCredential: checkCredential,
+    checkUserCredential: checkUserCredential,
     createUser:createUser
 }

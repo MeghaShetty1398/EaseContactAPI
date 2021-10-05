@@ -14,7 +14,7 @@ const getWorker = async (req, res) => {
         where: {
             status: true
         },
-        attributes: ['id','name','mobile','email','gender','age','experience','qualification','profile_image','proof_document','address','pincode'],
+        attributes: ['id','name','mobile','email','gender','age','experience','qualification','profile_image','proof_document','address','pincode','state','city','area','available','status'],
   
     }).then(result => {
         res.json({
@@ -62,6 +62,7 @@ const createWorker = [
             city:req.body.city,
             area:req.body.area,
             password:hashPassword,
+            available:1,
             status: 1,
         }).then((result) => {  
             models.worker.findOne({
@@ -113,7 +114,7 @@ const checkWorkerCredential = [
             attributes: ['id','name','mobile','email','gender','age','experience','qualification','address','pincode'],
        
         }).then(result => {
-            res.json({ 'success': true, 'token': jwt.sign({ id: user.id }, process.env.ENC_KEY), 'user': result });
+            res.json({ 'success': true, 'token': jwt.sign({ id: worker.id }, process.env.ENC_KEY), 'user': result });
         }).catch(err => {
             res.status(422).json({
                 result: err

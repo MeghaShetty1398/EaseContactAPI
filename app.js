@@ -26,6 +26,7 @@ app.use((req, res, next) => {
 //Inatializing Routes
 app.use(allRoutes.user);
 app.use(allRoutes.worker);
+app.use(allRoutes.category);
 
 //Database connection
 const sequelize = require('./utilities/connections/mysqlConnection');

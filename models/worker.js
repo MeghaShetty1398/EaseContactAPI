@@ -69,6 +69,10 @@ const workerModel = dbConnection.define('worker',{
         type : sequelize.STRING(191),
         allowNull: false
     },
+    available :{
+        type : sequelize.BOOLEAN,
+        allowNull: false
+    },
     status :{
         type : sequelize.BOOLEAN,
         allowNull: false

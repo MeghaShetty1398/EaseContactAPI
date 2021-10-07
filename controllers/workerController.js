@@ -9,13 +9,26 @@ const base64ToImage = require('../utilities/connections/base64fun');
 const { user } = require('../utilities/connections/allModels');
 const nowdate = new Date();
 
+function workerRelation() {
+    models.worker.hasMany(models.category,{foreignKey:'worker_id'} );
+}
 const getWorker = async (req, res) => {
+    workerRelation()
     await models.worker.findAll({
         where: {
             status: true
         },
         attributes: ['id','name','mobile','email','gender','age','experience','qualification','profile_image','proof_document','address','pincode','state','city','area','available','status'],
-  
+        include:[
+            {
+                model: models.category,
+                attributes: ['id','name','charge','duration','negotiable','status'],
+                required: true,
+                where: {
+                    status: true,
+                } 
+            }, 
+        ]
     }).then(result => {
         res.json({
             message: result

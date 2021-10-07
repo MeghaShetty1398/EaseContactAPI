@@ -8,14 +8,6 @@ const image = require('../utilities/connections/image');
 const { user } = require('../utilities/connections/allModels');
 const nowdate = new Date();
 
-/*function userRelation() {
-    models.signup.belongsTo(models.userType, { foreignKey: 'user_type_id' });
-    models.signup.belongsTo(models.stream, { foreignKey: 'stream_id' });
-    models.signup.belongsTo(models.subStream, { foreignKey: 'substream_id' });
-    models.signup.belongsTo(models.state, { foreignKey: 'state_id' });
-    models.signup.belongsTo(models.city, { foreignKey: 'city_id' });
-    models.signup.belongsTo(models.area, { foreignKey: 'area_id' });
-}*/
 const getUser = async (req, res) => {
     userRelation();
     await models.signup.findAll({
@@ -23,6 +15,7 @@ const getUser = async (req, res) => {
             status: true
         },
         attributes: ['id', 'name', 'mobile', 'email',  'age'],
+        
   
     }).then(result => {
         res.json({

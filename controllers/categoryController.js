@@ -142,6 +142,7 @@ const deleteCategory = [
 const getAllCategory = async (req, res) => {
     await models.category.findAll({
         where: {
+            worker_id:req.user.id,
             status: true
         },
         attributes: ['id','name','charge','duration','negotiable','status'],

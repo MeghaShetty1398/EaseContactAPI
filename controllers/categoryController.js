@@ -9,6 +9,10 @@ const { admin } = require('../utilities/connections/allModels');
 const nowdate = new Date();
 const base64ToImage = require('../utilities/connections/base64fun');
 
+function categoryRelation()
+{
+    models.category.hasOne(models.workercategory,{foreignKey:'category_id'})
+}
 const createCategory = [
     check('name').isString().withMessage("Invalid category name"),
     check('charge').isNumeric().withMessage("Invalid charges"),
@@ -20,9 +24,11 @@ const createCategory = [
         if (!errors.isEmpty()) {
             return res.status(422).json({ errors: errors.array() });
         }
+        const category = await models.category.findOne({ where: { name: req.body.name } });
         console.log(req.user.id)
-        models.category.create({
+        models.workercategory.create({
             worker_id:req.user.id,
+            category_id:category.id,
             name:req.body.name,
             charge:req.body.charge,
             duration:req.body.duration,
@@ -59,7 +65,8 @@ const updateCategory = [
         if (!errors.isEmpty()) {
             return res.status(422).json({ errors: errors.array() });
         }
-        models.category.findOne({
+        const category = await models.category.findOne({ where: { name: req.body.name } });
+        models.workercategory.findOne({
             where: {
                 id: req.body.id,
                 status: true
@@ -68,6 +75,7 @@ const updateCategory = [
             console.log(result)
             if(result)
             {    result.update({
+                    category_id:category.id,
                     name:req.body.name,
                     charge:req.body.charge,
                     duration:req.body.duration,
@@ -108,7 +116,7 @@ const deleteCategory = [
             return res.status(422).json({ errors: errors.array() });
         }
 
-        await models.category.findOne({
+        await models.workercategory.findOne({
             where: {
                 id: req.body.category_id,
                 status: true
@@ -139,29 +147,63 @@ const deleteCategory = [
         });
     }
 ]
-const getAllCategory = async (req, res) => {
-    await models.category.findAll({
-        where: {
-            worker_id:req.user.id,
-            status: true
-        },
-        attributes: ['id','name','charge','duration','negotiable','status'],
-    }).then(result => {
-        if (result) {
+// const getAllCategory = async (req, res) => {
+//     categoryRelation()
+//     await models.category.findAll({
+//         where: {
+//             status: true
+//         },
+//         attributes: ['id','name','status'],
+//         include:[
+//             {
+//                 model: models.workercategory,
+//                 attributes: ['id','worker_id','charge','duration','negotiable','status'],
+//                 required: true,
+//                 where: {
+//                     status: true,
+//                 } 
+//             }, 
+//         ]
+//     }).then(result => {
+//         res.json({
+//             message: result
+//         })
+//     }).catch(err => {
+//         res.json({
+//             result: err
+//         });
+//     });
+// }
+const getAllCategory = [ 
+    async (req, res) => {
+        categoryRelation();
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errors: errors.array() });
+        }
+        await models.workercategory.findAll({
+            where: {
+                worker_id:req.user.id,
+                status: true
+            },
+            attributes: ['id','name','charge','duration','negotiable','status'],
+        }).then(result => {
+            if (result) {
+                res.json({
+                    result: result
+                })
+            } else {
+                res.json({
+                    result:'No category found'
+                })
+            }      
+        }).catch(err => {
             res.json({
-                result: result
-            })
-        } else {
-            res.json({
-                result:'No category found'
-            })
-        }      
-    }).catch(err => {
-        res.json({
-            result: err
+                result: err
+            });
         });
-    });
-} 
+    }
+]
  module.exports = {
     getAllCategory:getAllCategory,
     createCategory:createCategory,

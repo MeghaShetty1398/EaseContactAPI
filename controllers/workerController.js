@@ -10,25 +10,52 @@ const { user } = require('../utilities/connections/allModels');
 const nowdate = new Date();
 
 function workerRelation() {
-    models.worker.hasMany(models.category,{foreignKey:'worker_id'} );
+   models.workercategory.belongsTo(models.worker,{foreignKey:'worker_id'} );
+   models.workercategory.belongsTo(models.category,{foreignKey:'category_id'});
+   models.category.hasMany(models.workercategory,{foreignKey:'category_id'})
 }
 const getWorker = async (req, res) => {
     workerRelation()
-    await models.worker.findAll({
+    await models.category.findAll({
+        // where: {
+        //     status: true
+        // },
+        // attributes: ['id','name','mobile','email','gender','age','experience','qualification','profile_image','proof_document','address','pincode','state','city','area','available','status'],
+        // include:[
+        //     {
+        //         model: models.category,
+        //         attributes: ['id','name','charge','duration','negotiable','status'],
+        //         required: true,
+        //         where: {
+        //             status: true,
+        //         } 
+        //     }, 
+        // ]
         where: {
             status: true
         },
-        attributes: ['id','name','mobile','email','gender','age','experience','qualification','profile_image','proof_document','address','pincode','state','city','area','available','status'],
+        attributes:['name'],
         include:[
-            {
-                model: models.category,
-                attributes: ['id','name','charge','duration','negotiable','status'],
-                required: true,
-                where: {
-                    status: true,
-                } 
-            }, 
-        ]
+                {
+                    model: models.workercategory,
+                    attributes: ['id','name','charge','duration','negotiable','status'],
+                    required: true,
+                    where: {
+                        status: true,
+                    } ,
+                    include:[
+                        {
+                            model: models.worker,
+                            attributes: ['id','name','mobile','email','gender','age','experience','qualification','profile_image','proof_document','address','pincode','state','city','area','available','status'],
+                            
+                            required: true,
+                            where: {
+                                status: true,
+                            } 
+                        }, 
+                    ]
+                }, 
+            ]
     }).then(result => {
         res.json({
             message: result

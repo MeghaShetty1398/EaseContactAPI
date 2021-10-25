@@ -163,8 +163,42 @@ const checkWorkerCredential = [
 
     }
 ];
+
+//Worker Review
+const createWorkerReview = [
+    check('worker_id').not().isEmpty().withMessage("Invalid Worker ID"),
+    check('review').isString().withMessage("Invalid Details"),
+    check('string').isString(),
+    async (req, res) => {
+        console.log(req.user.id)
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(422).json({ errors: errors.array() });
+        }
+        
+        models.workerreview.create({
+            user_id:req.user.id,
+            worker_id:req.body.worker_id,
+            review:req.body.review,
+            status: 1,
+        }).then((result) => {
+            res.json({ 'success': true, 'error': false });           
+            }).catch(err => {
+                if (err.message.toLowerCase() === "validation error") {
+                    res.json({
+                        result: err.errors
+                    });
+                } else {
+                    res.json({
+                        result: err.message
+                    });
+                }
+            });
+    }
+]
 module.exports = {
     getWorker:getWorker,
     checkWorkerCredential:checkWorkerCredential,
-    createWorker:createWorker
+    createWorker:createWorker,
+    createWorkerReview:createWorkerReview
 }

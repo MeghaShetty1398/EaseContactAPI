@@ -1,7 +1,7 @@
 const sequelize = require('sequelize');
 const dbConnection = require('../utilities/connections/mysqlConnection');
 
-const assignworkModel = dbConnection.define('assignwork',{
+const workerreviewModel = dbConnection.define('reviewworker',{
     id: {
         type: sequelize.BIGINT(20),
         autoIncrement: true,
@@ -23,17 +23,13 @@ const assignworkModel = dbConnection.define('assignwork',{
             key: 'id', // This is the column name of the referenced model
         }
     },
-    details :{
+    review :{
         type : sequelize.STRING(100),
-        allowNull: false
-    },
-    charge :{
-        type : sequelize.DOUBLE(7,2),
         allowNull: false
     },
     status :{
         type : sequelize.BOOLEAN,
         allowNull: false
-    }
+    },
 })
-module.exports = assignworkModel;
+module.exports = workerreviewModel;

@@ -13,6 +13,14 @@ function workerRelation() {
    models.workercategory.belongsTo(models.worker,{foreignKey:'worker_id'} );
    models.workercategory.belongsTo(models.category,{foreignKey:'category_id'});
    models.category.hasMany(models.workercategory,{foreignKey:'category_id'})
+
+}
+function workerReviewRelation()
+{
+    models.workerreview.belongsTo(models.worker,{foreignKey:'worker_id'} );
+    models.workerreview.belongsTo(models.user,{foreignKey:'user_id'});
+    models.user.hasMany(models.workerreview,{foreignKey:'user_id'});
+    models.worker.hasMany(models.workerreview,{foreignKey:'worker_id'});
 }
 const getWorker = async (req, res) => {
     workerRelation()
@@ -196,9 +204,40 @@ const createWorkerReview = [
             });
     }
 ]
+
+//Worker review
+const getWorkerReview = async (req, res) => {
+    workerReviewRelation()
+    await models.workerreview.findAll({
+        where: {
+            worker_id:req.user.id,
+            status: true
+        },
+        attributes:['user_id','worker_id','review'],
+        include:[
+                {
+                    model: models.user,
+                    attributes: ['id','name','email','mobile','address','state','city','area'],
+                    required: true,
+                    where: {
+                        status: true,
+                    }
+                }, 
+            ]
+    }).then(result => {
+        res.json({
+            message: result
+        })
+    }).catch(err => {
+        res.json({
+            result: err
+        });
+    });
+}
 module.exports = {
     getWorker:getWorker,
     checkWorkerCredential:checkWorkerCredential,
     createWorker:createWorker,
-    createWorkerReview:createWorkerReview
+    createWorkerReview:createWorkerReview,
+    getWorkerReview:getWorkerReview
 }

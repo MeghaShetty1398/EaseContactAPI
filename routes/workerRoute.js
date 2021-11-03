@@ -9,5 +9,7 @@ router.post('/workerlogin',access, worker.checkWorkerCredential);
 router.get('/getAllWorker',access, worker.getWorker);
 router.post('/createWorkerReview',access,verify, worker.createWorkerReview);
 router.get('/getWorkerReview',access,verify, worker.getWorkerReview);
+router.get('/getWorkerProfile',access,verify, worker.getWorkerProfile);
+router.post('/updateAvailability',access,verify, worker.updateAvailability);
 
 module.exports = router;

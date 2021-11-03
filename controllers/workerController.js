@@ -159,7 +159,7 @@ const checkWorkerCredential = [
             where: {
                 email: worker.email
             },
-            attributes: ['id','name','mobile','email','gender','age','experience','qualification','address','pincode'],
+            attributes: ['id','name','mobile','email','gender','age','experience','qualification','address','pincode','profile_image','available'],
        
         }).then(result => {
             res.json({ 'success': true, 'token': jwt.sign({ id: worker.id }, process.env.ENC_KEY), 'user': result });
@@ -234,10 +234,73 @@ const getWorkerReview = async (req, res) => {
         });
     });
 }
+const getWorkerProfile = async (req, res) => {
+    await models.worker.findAll({
+        where: {
+            id:req.user.id,
+            status: true
+        },
+        attributes:['id','name','mobile','email','gender','age','experience','qualification','profile_image','proof_document','address','pincode','state','city','area','available','status','available'],
+    }).then(result => {
+        res.json({
+            message: result
+        })
+    }).catch(err => {
+        res.json({
+            result: err
+        });
+    });
+}
+const updateAvailability = [
+    check('string').isString(),
+
+    async (req, res) => {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+           return res.status(422).json({ errors: errors.array() });
+        }
+        models.worker.findOne({
+            where: {
+                id:req.user.id,
+                status: true
+            }
+        }).then((result) => {
+            console.log(result)
+            if(result)
+            {    result.update({
+                    available:req.body.available,
+                }).then(result => {
+                    res.json({ 'success': true, result: result });    
+                }).catch(err => {
+                    res.json({
+                        result: err
+                    });
+                });
+            }
+            else{
+                res.status(422).json({ result: { error: 'no worker found' } });
+            }
+
+        }).catch(err => {
+            if (err.message.toLowerCase() === "validation error") {
+                res.json({
+                    result: err.errors
+                });
+            } else {
+                res.json({
+                    result: err.message
+                });
+            }
+        });
+    }
+]
+
 module.exports = {
     getWorker:getWorker,
     checkWorkerCredential:checkWorkerCredential,
     createWorker:createWorker,
     createWorkerReview:createWorkerReview,
-    getWorkerReview:getWorkerReview
+    getWorkerReview:getWorkerReview,
+    getWorkerProfile:getWorkerProfile,
+    updateAvailability:updateAvailability
 }

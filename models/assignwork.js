@@ -31,6 +31,14 @@ const assignworkModel = dbConnection.define('assignwork',{
         type : sequelize.DOUBLE(7,2),
         allowNull: false
     },
+    accepted:{
+        type:sequelize.INTEGER,
+        allowNull:false
+    },
+    completed :{
+        type : sequelize.BOOLEAN,
+        allowNull: false
+    },
     status :{
         type : sequelize.BOOLEAN,
         allowNull: false

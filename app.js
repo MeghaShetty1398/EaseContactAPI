@@ -28,6 +28,7 @@ app.use(allRoutes.user);
 app.use(allRoutes.worker);
 app.use(allRoutes.assignwork);
 app.use(allRoutes.category);
+app.use(allRoutes.dashboard);
 
 //Database connection
 const sequelize = require('./utilities/connections/mysqlConnection');

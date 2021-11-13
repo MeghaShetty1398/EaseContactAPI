@@ -13,6 +13,7 @@ function workerRelation() {
    models.workercategory.belongsTo(models.worker,{foreignKey:'worker_id'} );
    models.workercategory.belongsTo(models.category,{foreignKey:'category_id'});
    models.category.hasMany(models.workercategory,{foreignKey:'category_id'})
+
 }
 function workerReviewRelation()
 {
